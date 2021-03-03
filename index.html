@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>한문철 TV 탐색기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="한문철 TV 의 영상을 태그 검색, 텍스트 검색, 사건번호 검색, 회차 검색을 제공합니다. 또는 최근 업데이트된 영상을 조회하실 수 있습니다."/>
+    <meta name="keywords" content="한문철 TV, 검색, 탐색기, 태그 검색, 텍스트 검색, 사건번호 검색, 회차 검색, hanexplorer"/>
+    <meta property="og:title" content="한문철 TV 탐색기 - hanexplorer">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="한문철 TV 의 영상을 태그 검색, 텍스트 검색, 사건번호 검색, 회차 검색을 제공합니다. 또는 최근 업데이트된 영상을 조회하실 수 있습니다.">
+    <meta property="og:site_name" content="한문철 TV 탐색기 - hanexplorer">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+            crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+
+    <style>
+        .hantv {
+            color: darkblue !important;
+            background-color: #f5f5f5 !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-2">
+    <div class="h2 text-center">
+        <a href="" style="text-decoration: none;"><span class="hantv">한문철 TV</span> 탐색기</a>
+    </div>
+    <hr>
+    <div>
+        <div class="input-group mb-3">
+            <select class="form-select" id="searchType">
+                <option selected value="tag">태그 검색</option>
+                <option value="description">설명란 검색</option>
+            </select>
+            <input type="text" list="tagList" id="keyword" class="form-control" aria-label="키워드 입력">
+            <datalist id="tagList">
+            </datalist>
+            <button type="button" class="btn btn-outline-secondary" onclick="go_search()">검색!</button>
+        </div>
+        <div class="mt-0 mb-1">
+            검색 결과: <span id="searchCnt">1</span>개 <span id="loading"> - 페이지를 로드하고 있습니다...</span>
+        </div>
+    </div>
+
+    <div id="welcome" class="card">
+        <div class="card-body">
+            <h3><span class="hantv">한문철 TV</span> 탐색기에 오신 것을 환영합니다.</h3>
+            <br>
+            <div class="no-ie mb-3" style="border: solid thick red; text-align: center; display: none">
+                <h2 style="color: red; font-weight: bold;">현재 Internet Explorer 는 지원하지 않습니다!</h2>
+                <span style="color: red; font-weight: bold;">모든 기능이 작동하지 않을 것 입니다.</span> 최신 버전의 다른 브라우저를 이용해주세요.<br>
+                <br>
+                Windows 10 이용자신가요? <a class="no-ie-link" style="color: blue; font-weight: bolder">추가 설치 없이 Edge 로
+                이 페이지 열기
+                &rarr;</a>
+            </div>
+            <h3>개요</h3>
+            <span class="hantv">한문철 TV</span>의 영상을 태그 검색, 설명란 텍스트 검색을 할 수 있습니다.<br>
+            또는 <a href="#-pRecent">최근 업데이트된 영상을 조회(50건)</a>하실 수 있습니다.<br>
+            <b>* 이 사이트는 <span class="hantv">한문철 TV</span> 공식 채널과 관련이 없습니다.</b><br>
+            <br>
+            <h3>검색</h3>
+            태그 검색의 경우 아래 태그 목록에서 검색합니다. (예: <a href="#생방송">생방송</a>)<br>
+            설명란 검색은 <span class="hantv">한문철 TV</span>의 영상 설명란에서 검색합니다. (예: <a href="#-d브이로그">브이로그</a>)<br>
+            검색 결과 화면에서 썸네일 또는 제목을 클릭하면 유튜브로 이동하며 태그를 클릭하면 해당 태그를 검색합니다.<br>
+            유튜브 링크는 무조건 새 창에서 열리고 태그 링크는 현재 창에서 열립니다. 링크를 새 창에서 열려면 Ctrl 키를 누르고 링크를 클릭 하십시오.<br>
+            <br>
+            <h3>태그</h3>
+            아쉽게도 여러개의 태그 검색은 지원되지 않습니다.<br>
+            태그는 <b>영상 제목, 설명란에서 가져오며</b> 지원되는 태그 목록은 아래와 같습니다.<br>
+            사건번호(예: 0000가단00000)<br>
+            시스템 코드로 추정되는 기호(예: b00000)<br>
+            3~6자리의 숫자(예: 000, 0000, 00000)<br>
+            3~6자리의 회차번호(예: 000, 0000, 00000)<br>
+            <div id="supported_tags"></div>
+            <br>
+            금지 키워드는 설명란 검색에서 데이터베이스 부하를 줄이기 위해 지정되었습니다.<br>
+            금지 키워드는 다음과 같습니다. <br>
+            블랙박스, 블박, 교통, 사고, 영상, traffic, accident, car, dash, cam, black, box<br>
+            <br>
+            <h3>영상 데이터</h3>
+            영상 정보(URL, 제목, 설명, 업로드 날짜)는 <a href="https://developers.google.com/youtube/v3" target="_blank">Google
+            Youtube Data API</a>를 통하여 수집하였습니다.<br>
+            영상 썸네일은 유튜브 서버에서 직접 가져옵니다. (예: https://i.ytimg.com/vi/${youtube_id}/mqdefault.jpg)<br>
+            <br>
+            <h3>수익</h3>
+            이 웹 사이트는 <a href="https://en.wikipedia.org/wiki/Toy_program">토이 프로젝트</a>로 제작된 것이며 영리 목적이 아닙니다.<br>
+            또한 이 웹 사이트에서는 이용자의 개인정보를 수집하지 않습니다. 웹 사이트 트래픽 추적기를 사용하지 않으며 광고 또한 없습니다.<br>
+            <br>
+            <h3>문의</h3>
+            태그 추가 등등 문의는 ahn[골뱅이표]fastmail[점]com 으로 해 주세요.<br>
+            <a href="https://github.com/dryrain39" target="_blank">Dryrain39 제작</a>
+        </div>
+    </div>
+
+    <div id="cards">
+
+    </div>
+
+    <div class="d-grid gap-2">
+        <button class="btn btn-outline-secondary" id="showMore" onclick="show(30)" type="button" style="display: none">
+            더 보기
+        </button>
+    </div>
+
+    <br>
+</div>
+<script>
+    var agent = navigator.userAgent.toLowerCase();
+    if ((navigator.appName === 'Netscape' && agent.indexOf('trident') !== -1) || (agent.indexOf("msie") !== -1)) {
+        $(".no-ie").show();
+        $(".no-ie-link").attr("href", "microsoft-edge:" + location.href)
+    }
+</script>
+<script>
+
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function (search, pos) {
+            return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+        };
+    }
+
+    function pad(number) {
+        if (number < 10) {
+            return '0' + number;
+        }
+        return number;
+    }
+
+    Date.prototype.toCustomString = function () {
+        return this.getUTCFullYear() +
+            '-' + pad(this.getUTCMonth() + 1) +
+            '-' + pad(this.getUTCDate()) +
+            ' ' + pad(this.getUTCHours()) +
+            ':' + pad(this.getUTCMinutes()) +
+            ':' + pad(this.getUTCSeconds());
+    };
+
+
+    let tags_for_datalist = [];
+    let display_queue = [];
+
+    let load_element = $("#loading");
+
+
+    function update_tag() {
+        $.ajax({
+            url: "/tags",
+        }).done(function (response) {
+            for (const tag of response.all) {
+                if (typeof (tag) === "object") {
+                    tags_for_datalist.push(tag[0]);
+                    $("#tagList").append(`<option value="${tag[0]}">${tag.join(", ")}</option>`);
+                    $("#supported_tags").append(`<a href="#${tag[0]}">${tag[0]}</a> &larr; (${tag.join(", ")})<br>`)
+                } else {
+                    tags_for_datalist.push(tag);
+                    $("#tagList").append(`<option value="${tag}">`);
+                    $("#supported_tags").append(`<a href="#${tag}">${tag}</a><br>`)
+                }
+            }
+        });
+    }
+
+
+    function recent() {
+        display_queue = [];
+        load_element.show();
+
+        $.ajax({
+            url: `/recent/50`,
+        }).done(function (response) {
+            if (!response.success) {
+                alert(response.msg);
+                return;
+            }
+
+            let card_list_element = $("#cards");
+
+            card_list_element.empty();
+
+            $("#searchCnt").html(response.data.length);
+
+
+            display_queue = response.data;
+            display_queue = display_queue.reverse();
+            if (response.data.length !== 0) {
+                show(30);
+                $("#showMore").show();
+            } else {
+                alert("검색결과가 없습니다.")
+            }
+
+            load_element.hide();
+        });
+    }
+
+
+    function go_search() {
+        let t = $("#searchType").val();
+        let k = $("#keyword").val();
+        let tg = "";
+
+        if (t === "description") {
+            tg += "-d"
+        }
+
+        tg += k;
+
+        window.location = "#" + tg;
+    }
+
+
+    function search() {
+        load_element.show();
+        let card_list_element = $("#cards");
+        window.scrollTo(0, 0);
+        display_queue = [];
+
+        $.ajax({
+            url: `/search/${$("#searchType").val()}/${$("#keyword").val()}`,
+        }).done(function (response) {
+            if (!response.success) {
+                alert(response.msg);
+                return;
+            }
+
+            card_list_element.empty();
+
+            $("#searchCnt").html(response.data.length);
+
+            display_queue = response.data;
+            display_queue = display_queue.reverse();
+            if (response.data.length !== 0) {
+                show(30);
+                $("#showMore").show();
+            } else {
+                alert("검색결과가 없습니다.")
+            }
+
+            load_element.hide();
+        });
+    }
+
+    function show(n) {
+        let card_list_element = $("#cards");
+
+        for (let i = 0; i < n; i++) {
+            let video = display_queue.pop();
+
+            if (video === undefined) {
+                $("#showMore").hide();
+                break;
+            }
+
+            let tag = video.tags.split(",").map(function (tag) {
+                return `<a href="#${tag}">${tag}</a>`
+            }).join(", ");
+
+
+            card_list_element.append(
+                `<div class="card mb-3" style="">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <a target="_blank" href="http://youtu.be/${video.youtube_id}"><img src="https://i.ytimg.com/vi/${video.youtube_id}/mqdefault.jpg" alt="${video.title}의 썸네일" width="100%"></a>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title"><a target="_blank" style="text-decoration: none !important;" href="http://youtu.be/${video.youtube_id}">${video.title}</a></h5>
+                                    <p class="card-text">${tag}</p>
+                                    <p class="card-text">
+                                        <small class="text-muted">업로드 날짜: ${(new Date(video.published_at)).toCustomString()}</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+            )
+        }
+
+    }
+
+    function search_tag(t) {
+        $("#searchType").val("tag");
+        $("#keyword").val(decodeURI(t));
+        search();
+    }
+
+    function search_description(t) {
+        $("#searchType").val("description");
+        $("#keyword").val(decodeURI(t));
+        search();
+    }
+
+
+    $("#keyword").keypress(function (e) {
+        if (e.key === "Enter") {
+            go_search();
+        }
+    });
+
+
+    $(document).ready(function () {
+        load_element.hide();
+        update_tag();
+        hashchange();
+    });
+
+    window.addEventListener('hashchange', hashchange);
+
+    function hashchange() {
+        let site_title = "한문철 TV 탐색기 - ";
+        let hash = location.hash.slice(1);
+        let welcome = $("#welcome");
+
+        if (!hash.length) {
+            welcome.show();
+            display_queue = [];
+            $("#cards").empty();
+            $("#showMore").hide();
+            return;
+        } else {
+            welcome.hide();
+        }
+
+        if (hash.startsWith("-p")) {
+            // 페이지
+            if (hash.startsWith("-pRecent")) {
+                document.title = site_title + "최근 영상";
+                recent();
+            }
+
+
+        } else if (hash.startsWith("-d")) {
+            // 설명란 키워드
+            search_description(hash.split("-d")[1]);
+            document.title = site_title + decodeURI(hash.split("-d")[1]);
+        } else {
+            // 태그 키워드
+            document.title = site_title + decodeURI(hash);
+            search_tag(hash);
+        }
+    }
+</script>
+
+</body>
+</html>
